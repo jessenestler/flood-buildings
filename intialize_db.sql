@@ -2,3 +2,4 @@
 create schema if not exists sandbox;
 create schema if not exists flood;
 set search_path = flood, sandbox;
+create extension if not exists postgis;
