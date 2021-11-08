@@ -2,6 +2,6 @@
 create schema if not exists sandbox;
 create schema if not exists raw;
 create schema if not exists proc;
-create schema if not exists fin;
-set search_path = sandbox, raw, proc, fin;
+create schema if not exists clean;
+set search_path = sandbox, raw, proc, clean;
 create extension if not exists postgis;
