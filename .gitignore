@@ -1,1 +1,4 @@
 .vscode/
+
+# QGIS files
+*.qgz
