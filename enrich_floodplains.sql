@@ -1,7 +1,6 @@
 /*
-Union flood polygons so there are no overlapping geometeries within RISKIESTs,
-and each resultant polygon has the flood history for each RISKIEST category in
-that area.
+Convert flood zone and floodway categories into quantitative risk levels,
+where HHZ is the highest risk level (4) and the 500-year is the lowest (1)
  */
  
  -- DROP TABLES
@@ -13,9 +12,8 @@ DROP TABLE IF EXISTS CLEAN.FLOODPLAINS CASCADE;
 
 CREATE TABLE CLEAN.FLOODPLAINS (
 	OID serial PRIMARY KEY,
-	RISKIEST integer,
-	FROMDATE date,
-	TODATE date,
+	RISKLEVEL integer,
+	EFFRANGE DATERANGE,
 	GEOM GEOMETRY(POLYGON, 2876) NOT NULL
 );
 
@@ -27,15 +25,14 @@ CREATE INDEX FLOODPLAINS_GEOM_IDX ON CLEAN.FLOODPLAINS USING GIST(GEOM);
 
 -- INSERT DATA
 
-INSERT INTO CLEAN.FLOODPLAINS (RISKIEST, FROMDATE, TODATE, GEOM)
+INSERT INTO CLEAN.FLOODPLAINS (RISKLEVEL, EFFRANGE, GEOM)
 SELECT 
 	CASE
 		WHEN FLOODZONE = 'HHZ' THEN 4 -- high hazard zone is most dangerous/likely
 		WHEN FLOODZONE like 'A%' AND FLOODWAY = 1 THEN 3 -- conveyance zone is next
 		WHEN FLOODZONE like 'A%' AND FLOODWAY <> 1 THEN 2 --100 year
 		WHEN FLOODZONE in ('X', 'B') THEN 1 -- 500 year
-	END RISKIEST,
-	FROMDATE,
-	TODATE,
+	END RISKLEVEL,
+	EFFRANGE,
 	GEOM
 FROM PROC.FLOODPLAINS;
